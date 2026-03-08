@@ -202,7 +202,9 @@ alias tk='tmux kill-session -t'
 alias td='tmux detach'
 
 # Dev session launcher (creates Claude Code workflow layout)
+# cd into any project folder and type 'sc' to start coding
 alias dev='dev-session'
+alias sc='dev-session'
 
 # === End tmux Configuration ===
 TMUX_EOF

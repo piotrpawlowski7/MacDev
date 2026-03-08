@@ -152,9 +152,14 @@ cmon                    # Alias for claude-monitor
 ### Dev Session (tmux layout)
 
 ```bash
-dev-session myproject ~/path/to/project
-# or with monitor override:
-dev-session myproject ~/path/to/project --monitor=btop
+cd ~/projects/myapp
+sc                    # that's it - launches everything
+
+# also works as:
+dev-session                              # same as sc, uses current dir
+dev-session ~/projects/myapp             # give it a path
+dev-session myapp ~/projects/myapp       # explicit name + path
+dev-session --monitor=btop               # override system monitor
 ```
 
 Creates a tmux layout optimized for Claude Code:

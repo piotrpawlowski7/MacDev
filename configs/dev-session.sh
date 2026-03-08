@@ -10,24 +10,47 @@
 #   - Bottom-right: System monitor (btop/htop)
 #
 # Usage:
-#   ./dev-session.sh [session-name] [project-path] [--monitor=CMD]
+#   dev-session                          # uses current dir, auto-names session
+#   dev-session [project-path]           # uses given path
+#   dev-session [session-name] [path]    # explicit name + path
+#   dev-session --monitor=btop           # override system monitor
 #
-# Examples:
-#   ./dev-session.sh                    # "dev" session in current dir
-#   ./dev-session.sh myapp ~/projects/myapp
-#   ./dev-session.sh myapp ~/projects/myapp --monitor=btop
+# Aliases (add to .zshrc):
+#   alias sc='dev-session'               # just type: sc
 # ============================================
 
-SESSION_NAME="${1:-dev}"
-PROJECT_DIR="${2:-$(pwd)}"
-
-# Parse optional --monitor flag
+# Parse flags first
 MONITOR_OVERRIDE=""
+POSITIONAL=()
 for arg in "$@"; do
     case "$arg" in
         --monitor=*) MONITOR_OVERRIDE="${arg#--monitor=}" ;;
+        *) POSITIONAL+=("$arg") ;;
     esac
 done
+
+# Smart argument handling:
+#   0 args: session name = folder name, path = current dir
+#   1 arg:  if it's a directory, use it as path + derive name; otherwise use as session name
+#   2 args: first = session name, second = path
+if [ ${#POSITIONAL[@]} -eq 0 ]; then
+    PROJECT_DIR="$(pwd)"
+    SESSION_NAME="$(basename "$PROJECT_DIR")"
+elif [ ${#POSITIONAL[@]} -eq 1 ]; then
+    if [ -d "${POSITIONAL[0]}" ]; then
+        PROJECT_DIR="$(cd "${POSITIONAL[0]}" && pwd)"
+        SESSION_NAME="$(basename "$PROJECT_DIR")"
+    else
+        SESSION_NAME="${POSITIONAL[0]}"
+        PROJECT_DIR="$(pwd)"
+    fi
+else
+    SESSION_NAME="${POSITIONAL[0]}"
+    PROJECT_DIR="${POSITIONAL[1]}"
+fi
+
+# tmux session names can't contain dots
+SESSION_NAME="${SESSION_NAME//./-}"
 
 # Colors
 GREEN='\033[0;32m'
@@ -105,19 +128,8 @@ tmux split-window -v -p 20 -c "$PROJECT_DIR"
 #   pane 2 = top-right (dev server)
 #   pane 3 = bottom-right (system monitor)
 
-# Pane 0 (top-left): Claude Code
-tmux send-keys -t "$SESSION_NAME:1.0" "cd '$PROJECT_DIR' && clear" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo ''" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '  Ready for Claude Code - type: claude'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo ''" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '  Keybindings:'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a |   Split vertical'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a -   Split horizontal'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Alt+arrows Navigate panes'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Shift+arrows Switch windows'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a d   Detach session'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a z   Zoom pane'" C-m
-tmux send-keys -t "$SESSION_NAME:1.0" "echo ''" C-m
+# Pane 0 (top-left): Claude Code (auto-launch)
+tmux send-keys -t "$SESSION_NAME:1.0" "cd '$PROJECT_DIR' && clear && claude" C-m
 
 # Pane 1 (bottom-left): Claude Monitor
 if [ -n "$CLAUDE_MONITOR_CMD" ]; then
