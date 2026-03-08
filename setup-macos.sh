@@ -68,11 +68,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 show_menu() {
     echo -e "${YELLOW}What would you like to set up?${NC}"
     echo ""
-    echo "  1) ${GREEN}Full Setup${NC} - Development tools + Terminal customization"
+    echo "  1) ${GREEN}Full Setup${NC} - Development tools + Terminal customization + tmux"
     echo "  2) ${BLUE}Dev Environment Only${NC} - Essential development tools"
     echo "  3) ${PURPLE}Terminal Only${NC} - Beautiful terminal setup"
-    echo "  4) ${CYAN}Verify Setup${NC} - Check what's already installed"
-    echo "  5) Exit"
+    echo "  4) ${YELLOW}Multiplexer Only${NC} - tmux with Catppuccin theme + dev sessions"
+    echo "  5) ${PURPLE}Claude Monitor${NC} - Live dashboard for Claude Code instances"
+    echo "  6) ${CYAN}Verify Setup${NC} - Check what's already installed"
+    echo "  7) Exit"
     echo ""
 }
 
@@ -102,6 +104,32 @@ run_terminal_setup() {
     fi
 }
 
+# Run tmux setup
+run_tmux_setup() {
+    print_info "Starting terminal multiplexer setup..."
+    echo ""
+
+    if [ -f "$SCRIPT_DIR/scripts/setup-tmux.sh" ]; then
+        bash "$SCRIPT_DIR/scripts/setup-tmux.sh"
+    else
+        print_error "setup-tmux.sh not found!"
+        exit 1
+    fi
+}
+
+# Run Claude Monitor setup
+run_claude_monitor_setup() {
+    print_info "Starting Claude Monitor setup..."
+    echo ""
+
+    if [ -f "$SCRIPT_DIR/scripts/setup-claude-monitor.sh" ]; then
+        bash "$SCRIPT_DIR/scripts/setup-claude-monitor.sh"
+    else
+        print_error "setup-claude-monitor.sh not found!"
+        exit 1
+    fi
+}
+
 # Run verification
 run_verification() {
     print_info "Verifying your setup..."
@@ -125,8 +153,8 @@ main() {
     
     show_menu
     
-    read -p "Enter your choice (1-5): " choice
-    
+    read -p "Enter your choice (1-7): " choice
+
     case $choice in
         1)
             echo ""
@@ -135,6 +163,8 @@ main() {
             run_dev_setup
             echo ""
             run_terminal_setup
+            echo ""
+            run_tmux_setup
             ;;
         2)
             echo ""
@@ -150,9 +180,21 @@ main() {
             ;;
         4)
             echo ""
-            run_verification
+            echo -e "${YELLOW}🖥️  Multiplexer Setup Selected${NC}"
+            echo ""
+            run_tmux_setup
             ;;
         5)
+            echo ""
+            echo -e "${PURPLE}📊 Claude Monitor Setup Selected${NC}"
+            echo ""
+            run_claude_monitor_setup
+            ;;
+        6)
+            echo ""
+            run_verification
+            ;;
+        7)
             echo ""
             print_info "Goodbye! 👋"
             exit 0

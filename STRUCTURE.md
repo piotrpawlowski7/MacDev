@@ -16,7 +16,14 @@ macOs dev setup/
 ├── scripts/                        # Core installation scripts
 │   ├── setup-dev-env.sh           # Installs development tools
 │   ├── pimp-my-terminal.sh        # Installs terminal customization
+│   ├── setup-tmux.sh             # Installs tmux + theme + plugins
+│   ├── setup-claude-monitor.sh   # Installs Claude Code Monitor
+│   ├── claude-monitor.py         # Live dashboard for Claude Code instances
 │   └── verify-setup.sh            # Verifies installation
+│
+├── configs/                        # Configuration files
+│   ├── tmux.conf                  # tmux config (Catppuccin Mocha theme)
+│   └── dev-session.sh             # Dev session layout launcher
 │
 ├── docs/                           # Detailed guides
 │   ├── DEV_ENVIRONMENT_GUIDE.md   # Development tools documentation
@@ -31,27 +38,25 @@ macOs dev setup/
 ## Flow Diagram
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    setup-macos.sh                       │
-│              (Interactive Main Menu)                     │
-└────┬─────────────────────┬─────────────────┬───────────┘
-     │                     │                 │
-     │ Option 1            │ Option 2        │ Option 3
-     │ Full Setup          │ Dev Only        │ Terminal Only
-     │                     │                 │
-     ▼                     ▼                 ▼
-┌────────────────┐    ┌──────────┐    ┌────────────────┐
-│setup-dev-env.sh│    │   same   │    │pimp-my-        │
-│                │    │          │    │terminal.sh     │
-└────────┬───────┘    └────┬─────┘    └────────┬───────┘
-         │                 │                    │
-         └─────────────────┴────────────────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ verify-setup.sh │
-                  │  (Optional)     │
-                  └─────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                        setup-macos.sh                            │
+│                  (Interactive Main Menu)                          │
+└──┬──────────┬──────────┬──────────┬──────────┬──────────────┘
+   │          │          │          │          │
+   │ Opt 1    │ Opt 2    │ Opt 3    │ Opt 4    │ Opt 5
+   │ Full     │ Dev Only │ Terminal │ Mux      │ Monitor
+   │          │          │          │          │
+   ▼          ▼          ▼          ▼          ▼
+┌──────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌──────────┐
+│setup-dev-│ │ same   │ │pimp-my-│ │setup-  │ │setup-    │
+│env.sh    │ │        │ │terminal│ │tmux.sh │ │claude-   │
+│ +        │ │        │ │.sh     │ │        │ │monitor.sh│
+│pimp-my-  │ │        │ │        │ │        │ │          │
+│terminal  │ │        │ │        │ │        │ │          │
+│.sh +     │ │        │ │        │ │        │ │          │
+│setup-    │ │        │ │        │ │        │ │          │
+│tmux.sh   │ │        │ │        │ │        │ │          │
+└──────────┘ └────────┘ └────────┘ └────────┘ └──────────┘
 ```
 
 ## File Purposes
@@ -71,7 +76,17 @@ macOs dev setup/
 |------|---------|---------------------|
 | `setup-dev-env.sh` | Installs Homebrew, Git, Python, Node.js, utilities | ✅ Yes |
 | `pimp-my-terminal.sh` | Installs Oh My Zsh, Powerlevel10k, modern CLI tools | ✅ Yes |
+| `setup-tmux.sh` | Installs tmux, btop, TPM, Catppuccin theme, dev sessions | ✅ Yes |
+| `setup-claude-monitor.sh` | Installs Claude Code Monitor dashboard | ✅ Yes |
+| `claude-monitor.py` | Live TUI dashboard for Claude Code instances (rich) | ✅ Yes (`uv run`) |
 | `verify-setup.sh` | Checks what's installed | ✅ Yes |
+
+### configs/
+
+| File | Purpose |
+|------|---------|
+| `tmux.conf` | tmux configuration with Catppuccin Mocha theme, keybindings |
+| `dev-session.sh` | Launches a pre-configured tmux layout for Claude Code workflow |
 
 ### docs/
 

@@ -1,6 +1,6 @@
 # 🚀 macOS Development Setup
 
-Complete, automated setup for macOS development environments. Get up and running with essential dev tools and a beautiful terminal in minutes!
+Complete, automated setup for macOS development environments. Get up and running with essential dev tools, a beautiful terminal, tmux workflow, and a live Claude Code monitoring dashboard.
 
 ## ✨ What This Does
 
@@ -13,27 +13,44 @@ This repository provides automated scripts to set up a complete development envi
 - **Node.js & npm** - JavaScript runtime and package manager
 - **Common utilities** - tree, jq, wget, curl, htop
 
-### 🎨 Terminal Customization (Optional)
+### 🎨 Terminal Customization
 - **Oh My Zsh** - Powerful zsh framework
 - **Powerlevel10k** - Beautiful terminal theme
 - **zsh plugins** - Autosuggestions, syntax highlighting, and more
 - **Modern CLI tools** - eza, bat, fzf, fd, thefuck
+
+### 🖥️ Terminal Multiplexer (tmux)
+- **tmux** with Catppuccin Mocha theme
+- **TPM** - Tmux Plugin Manager
+- **tmux-resurrect** & **tmux-continuum** - Session persistence
+- **btop** - Beautiful system monitor
+- **dev-session** - Pre-configured Claude Code workflow layout
+
+### 📊 Claude Code Monitor
+- **Live TUI dashboard** for tracking Claude Code CLI instances
+- Active instance tracking (PID, CPU%, uptime, project)
+- Today's message/session counts from `history.jsonl`
+- Lifetime token usage by model from `stats-cache.json`
+- Recent activity feed with timestamps
+- Catppuccin Mocha colors, flicker-free 5s refresh via `rich`
 
 ## 🚀 Quick Start
 
 ### One-Command Setup
 
 ```bash
-cd "/Users/arvind/Documents/macOs dev setup"
 ./setup-macos.sh
 ```
 
-This launches an interactive menu where you can choose:
+This launches an interactive menu:
 
-1. **Full Setup** - Everything (dev tools + terminal customization)
-2. **Dev Environment Only** - Just the essential development tools
-3. **Terminal Only** - Just terminal beautification
-4. **Verify Setup** - Check what's already installed
+1. **Full Setup** - Dev tools + Terminal + tmux
+2. **Dev Environment Only** - Essential development tools
+3. **Terminal Only** - Terminal beautification
+4. **Multiplexer Only** - tmux with Catppuccin theme + dev sessions
+5. **Claude Monitor** - Live dashboard for Claude Code instances
+6. **Verify Setup** - Check what's already installed
+7. **Exit**
 
 ## 📋 Prerequisites
 
@@ -45,16 +62,22 @@ This launches an interactive menu where you can choose:
 ## 📁 Repository Structure
 
 ```
-macOs dev setup/
-├── setup-macos.sh           # Main entry point (interactive menu)
-├── scripts/                 # Core setup scripts
-│   ├── setup-dev-env.sh    # Development environment installer
-│   ├── pimp-my-terminal.sh # Terminal customization installer
-│   └── verify-setup.sh     # Verification script
-├── docs/                    # Documentation
+MacDev/
+├── setup-macos.sh                # Main entry point (interactive menu)
+├── scripts/                      # Core setup scripts
+│   ├── setup-dev-env.sh         # Development environment installer
+│   ├── pimp-my-terminal.sh      # Terminal customization installer
+│   ├── setup-tmux.sh            # tmux + theme + plugins installer
+│   ├── setup-claude-monitor.sh  # Claude Code Monitor installer
+│   ├── claude-monitor.py        # Live dashboard (rich TUI)
+│   └── verify-setup.sh          # Verification script
+├── configs/                      # Configuration files
+│   ├── tmux.conf                # tmux config (Catppuccin Mocha theme)
+│   └── dev-session.sh           # Dev session layout launcher
+├── docs/                         # Documentation
 │   ├── DEV_ENVIRONMENT_GUIDE.md
 │   └── TERMINAL_SETUP_GUIDE.md
-└── examples/                # Project-specific script examples
+└── examples/                     # Project-specific examples
     ├── start_dev.sh
     ├── verify_setup_project.sh
     └── README.md
@@ -62,126 +85,125 @@ macOs dev setup/
 
 ## 📖 Detailed Usage
 
-### Option 1: Development Environment Only
-
-Perfect if you just need coding tools without terminal customization:
+### Development Environment
 
 ```bash
 ./scripts/setup-dev-env.sh
 ```
 
-**What it installs:**
-- Homebrew
-- Git
-- Python 3.11 (via pyenv)
-- Node.js & npm
-- tree, jq, wget, curl, htop
+Installs Homebrew, Git, Python 3.11 (via pyenv), Node.js & npm, and common utilities.
 
-**Time:** ~10 minutes
-
-### Option 2: Terminal Customization Only
-
-For those who already have dev tools and just want a beautiful terminal:
+### Terminal Customization
 
 ```bash
 ./scripts/pimp-my-terminal.sh
 ```
 
-**What it installs:**
-- Oh My Zsh framework
-- Powerlevel10k theme
-- zsh-autosuggestions & zsh-syntax-highlighting
-- eza (modern ls)
-- bat (better cat)
-- fzf (fuzzy finder)
-- fd (faster find)
-- thefuck (command correction)
+Installs Oh My Zsh, Powerlevel10k, zsh plugins, and modern CLI tools (eza, bat, fzf, fd, thefuck).
 
-**Time:** ~5 minutes
+### tmux Multiplexer
 
-### Option 3: Verify Your Setup
+```bash
+./scripts/setup-tmux.sh
+```
 
-Check what's already installed:
+Installs tmux with Catppuccin Mocha theme, TPM, session persistence plugins, btop, and the `dev-session` command for a Claude Code workflow layout.
+
+### Claude Code Monitor
+
+```bash
+./scripts/setup-claude-monitor.sh
+```
+
+Installs the live monitoring dashboard. Requires `uv` (auto-installed via Homebrew).
+
+**Usage after install:**
+
+```bash
+claude-monitor          # Live dashboard (5s refresh)
+claude-monitor --once   # Single snapshot
+claude-monitor -i 10    # Custom refresh interval
+cmon                    # Alias for claude-monitor
+```
+
+**Dashboard shows:**
+
+```
+╭──────────────────────── CLAUDE CODE MONITOR ─────────────────────────╮
+│  ● 5 active instances                                                │
+│  MacDev       PID 56300  CPU 9.7%    37m                             │
+│  bhealth      PID 1237   CPU 8.7%    3d 12h                         │
+│  studio       PID 63503  CPU 0.7%    23m                             │
+│                                                                      │
+│  TODAY  Mar 8                                                        │
+│  Messages █░░░░░░░░░░░░░░  15                                        │
+│  Sessions ██████░░░░░░░░░  4                                         │
+│                                                                      │
+│  TOKENS (lifetime)                                                   │
+│  opus-4-5           2.07B tokens                                     │
+│  opus-4-6           730M tokens                                      │
+│  sonnet-4-5         114M tokens                                      │
+│                                                                      │
+│  LIFETIME  171 sessions · 93,674 msgs                                │
+│  Since Jan 13, 2026                                                  │
+╰──────────────────────────── ↻ 02:02:17 ──────────────────────────────╯
+```
+
+### Dev Session (tmux layout)
+
+```bash
+dev-session myproject ~/path/to/project
+# or with monitor override:
+dev-session myproject ~/path/to/project --monitor=btop
+```
+
+Creates a tmux layout optimized for Claude Code:
+
+```
+┌────────────────────────┬──────────────────┐
+│                        │   Dev Server     │
+│                        │   (npm run dev)  │
+│    Claude Code         ├──────────────────┤
+│    (full height)       │   Claude Monitor │
+│    (65% width)         │   (or btop)      │
+│                        │                  │
+└────────────────────────┴──────────────────┘
+```
+
+Monitor priority: `claude-monitor` > `btop` > `htop` > `top`
+
+### Verify Setup
 
 ```bash
 ./scripts/verify-setup.sh
 ```
 
-This shows:
-- ✅ What's installed correctly
-- ❌ What's missing
-- 💡 Suggestions for improvements
+Checks all installed components including dev tools, terminal enhancements, tmux, and Claude Monitor.
 
 ## 🎯 What You Get
 
-### Development Environment
-
-After setup, you'll have:
-
-```bash
-# Check versions
-python --version    # Python 3.11.x
-node --version      # Node.js v20+
-git --version       # Latest Git
-npm --version       # Latest npm
-
-# Ready to use
-pyenv               # Manage Python versions
-pip                 # Install Python packages
-npm                 # Install Node packages
-```
-
 ### Terminal Features
 
-If you chose terminal customization:
-
 ```bash
-# Beautiful file listing
-ll                  # Long format with icons
-la                  # Show all files
-lt                  # Tree view
-
-# Better file viewing
+ll                  # Beautiful file listing with icons
 cat file.py         # Syntax highlighting with bat
-
-# Fuzzy finding
-Ctrl+R              # Search command history
+Ctrl+R              # Fuzzy search command history
 Ctrl+T              # Find files
-
-# Git shortcuts
 gs                  # git status
-gl                  # Pretty git log
-gcap "msg"          # Add, commit, and push
-
-# Command correction
 fuck                # Fix your last command
 ```
 
-## 📚 Documentation
+### tmux Keybindings (prefix = Ctrl+a)
 
-- **[Development Environment Guide](docs/DEV_ENVIRONMENT_GUIDE.md)** - Complete guide to installed dev tools
-- **[Terminal Setup Guide](docs/TERMINAL_SETUP_GUIDE.md)** - Detailed terminal customization documentation
-- **[Examples README](examples/README.md)** - How to create project-specific automation
-
-## 🎨 Screenshots
-
-### Before
-```
-username@Macbook ~ %
-```
-
-### After Terminal Setup
-```
-╭─ ~/projects/my-app  main ✓ 
-╰─➤
-```
-
-With:
-- Git status indicators
-- Icons for files and folders
-- Syntax highlighting as you type
-- Auto-suggestions from history
-- Fuzzy search for files and commands
+| Key | Action |
+|-----|--------|
+| `Ctrl+a \|` | Split pane vertically |
+| `Ctrl+a -` | Split pane horizontally |
+| `Alt+arrows` | Navigate between panes |
+| `Shift+arrows` | Switch between windows |
+| `Ctrl+a z` | Zoom/unzoom current pane |
+| `Ctrl+a d` | Detach from session |
+| `Ctrl+a I` | Install plugins (capital I) |
 
 ## 🔧 Customization
 
@@ -198,15 +220,6 @@ nano ~/.zshrc
 source ~/.zshrc
 ```
 
-### Add Custom Aliases
-
-Add to `~/.zshrc`:
-
-```bash
-alias proj='cd ~/Documents/projects'
-alias update='brew update && brew upgrade'
-```
-
 ## 🐛 Troubleshooting
 
 ### Homebrew not found
@@ -217,69 +230,40 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ### Icons not showing in terminal
 
-Install a Nerd Font (Powerlevel10k wizard will help)
+Install a Nerd Font (Powerlevel10k wizard will help).
 
 ### Command not found after installation
 
 ```bash
 source ~/.zshrc
-# or restart your terminal
 ```
 
-### Permission errors
+### uv cache permission error
 
-The scripts handle this automatically, but if you encounter issues:
+If `claude-monitor` fails with a permission error on `~/.cache/uv`:
 
 ```bash
-sudo chown -R $(whoami) /opt/homebrew
+sudo chown -R $(whoami) ~/.cache/uv
 ```
 
 ## 🌟 Features
 
 - ✅ **Idempotent** - Safe to run multiple times
 - ✅ **Backs up** your existing configuration
-- ✅ **Non-interactive** installation (except for main menu)
+- ✅ **Modular** - Use only what you need
 - ✅ **Error handling** - Stops on failures
 - ✅ **Colorful output** - Easy to follow progress
-- ✅ **Modular** - Use only what you need
-
-## 🤝 Contributing
-
-This is a personal setup toolkit made shareable. Feel free to:
-
-1. Fork the repository
-2. Adapt scripts to your needs
-3. Share your improvements
-4. Report issues or suggestions
-
-## 📝 License
-
-Free to use and modify for personal or commercial projects.
+- ✅ **Zero-setup dependencies** - `uv run` handles Python packages automatically
 
 ## 🙏 Credits
 
-This setup installs and configures these amazing open-source projects:
+This setup installs and configures these open-source projects:
 
-- [Homebrew](https://brew.sh/)
-- [Oh My Zsh](https://ohmyz.sh/)
-- [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
-- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
-- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
-- [eza](https://github.com/eza-community/eza)
-- [bat](https://github.com/sharkdp/bat)
-- [fzf](https://github.com/junegunn/fzf)
-- [fd](https://github.com/sharkdp/fd)
-- [thefuck](https://github.com/nvbn/thefuck)
-
-## 🚀 Next Steps
-
-1. ✅ Run the setup: `./setup-macos.sh`
-2. 📖 Read the guides in `docs/`
-3. 🎨 Configure your terminal: `p10k configure`
-4. 💻 Start developing!
+- [Homebrew](https://brew.sh/) · [Oh My Zsh](https://ohmyz.sh/) · [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
+- [tmux](https://github.com/tmux/tmux) · [Catppuccin](https://github.com/catppuccin/tmux) · [TPM](https://github.com/tmux-plugins/tpm)
+- [eza](https://github.com/eza-community/eza) · [bat](https://github.com/sharkdp/bat) · [fzf](https://github.com/junegunn/fzf) · [fd](https://github.com/sharkdp/fd)
+- [rich](https://github.com/Textualize/rich) · [uv](https://github.com/astral-sh/uv)
 
 ---
 
 **Ready to pimp your development environment? Let's go! 🚀**
-
-*Made with ❤️ for developers who want a great setup without the hassle*

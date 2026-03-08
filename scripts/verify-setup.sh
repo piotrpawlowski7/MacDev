@@ -75,6 +75,44 @@ check_command "wget" "wget" "--version"
 check_command "curl" "curl" "--version"
 
 echo ""
+echo -e "${BLUE}Terminal Multiplexer:${NC}"
+echo "--------------------"
+check_command "tmux" "tmux" "-V" || echo -e "${YELLOW}○${NC} tmux: Not installed (run setup-tmux.sh)"
+check_command "btop" "btop" "--version" || echo -e "${YELLOW}○${NC} btop: Not installed (run setup-tmux.sh)"
+
+# Check TPM
+if [ -d "$HOME/.tmux/plugins/tpm" ]; then
+    echo -e "${GREEN}✓${NC} TPM (Tmux Plugin Manager): Installed"
+else
+    echo -e "${YELLOW}○${NC} TPM: Not installed (run setup-tmux.sh)"
+fi
+
+# Check tmux config
+if [ -f "$HOME/.tmux.conf" ]; then
+    echo -e "${GREEN}✓${NC} tmux config: Found"
+else
+    echo -e "${YELLOW}○${NC} tmux config: Not found (run setup-tmux.sh)"
+fi
+
+# Check dev-session command
+if command -v dev-session &> /dev/null || [ -f "$HOME/.local/bin/dev-session" ]; then
+    echo -e "${GREEN}✓${NC} dev-session: Available"
+else
+    echo -e "${YELLOW}○${NC} dev-session: Not installed (run setup-tmux.sh)"
+fi
+
+echo ""
+echo -e "${BLUE}Claude Code Monitor:${NC}"
+echo "--------------------"
+check_command "uv" "uv (Python runner)" "--version" || echo -e "${YELLOW}○${NC} uv: Not installed (run setup-claude-monitor.sh)"
+check_command "claude-monitor" "claude-monitor" "--once 2>&1 | head -1 && echo ok" || true
+if command -v claude-monitor &> /dev/null || [ -f "$HOME/.local/bin/claude-monitor" ]; then
+    echo -e "${GREEN}✓${NC} claude-monitor: Available"
+else
+    echo -e "${YELLOW}○${NC} claude-monitor: Not installed (run setup-claude-monitor.sh)"
+fi
+
+echo ""
 echo -e "${BLUE}Terminal Enhancements (Optional):${NC}"
 echo "---------------------------------"
 
