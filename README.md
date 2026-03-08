@@ -162,15 +162,18 @@ Creates a tmux layout optimized for Claude Code:
 ```
 ┌────────────────────────┬──────────────────┐
 │                        │   Dev Server     │
-│                        │   (npm run dev)  │
-│    Claude Code         ├──────────────────┤
-│    (full height)       │   Claude Monitor │
-│    (65% width)         │   (or btop)      │
-│                        │                  │
+│    Claude Code         │   (npm run dev)  │
+│    (80% height)        ├──────────────────┤
+│                        │   System Monitor │
+├────────────────────────┤   (btop)         │
+│    Claude Monitor      │                  │
+│    (20% height)        │                  │
 └────────────────────────┴──────────────────┘
+        65% width              35% width
 ```
 
-Monitor priority: `claude-monitor` > `btop` > `htop` > `top`
+- **Bottom-left:** Claude Monitor always runs here (live dashboard)
+- **Bottom-right:** System monitor (`btop` > `htop` > `top`, or `--monitor=CMD`)
 
 ### Verify Setup
 

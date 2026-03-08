@@ -4,7 +4,8 @@
 # Dev Session - tmux layout for Claude Code workflow
 # ============================================
 # Creates a pre-configured tmux session with:
-#   - Left pane (65%): Claude Code (full height)
+#   - Top-left (65% w, 80% h): Claude Code
+#   - Bottom-left (65% w, 20% h): Claude Monitor
 #   - Top-right: Dev server (npm run dev, etc.)
 #   - Bottom-right: System monitor (btop/htop)
 #
@@ -69,12 +70,21 @@ echo ""
 
 # ┌────────────────────────┬──────────────────┐
 # │                        │   Dev Server     │
-# │                        │   (npm run dev)  │
-# │    Claude Code         ├──────────────────┤
-# │    (full height)       │   Monitoring     │
-# │    (65% width)         │   (btop)         │
-# │                        │                  │
+# │    Claude Code         │   (npm run dev)  │
+# │    (80% height)        ├──────────────────┤
+# │                        │   Monitoring     │
+# ├────────────────────────┤   (btop)         │
+# │    Claude Monitor      │                  │
+# │    (20% height)        │                  │
 # └────────────────────────┴──────────────────┘
+#         65% width              35% width
+
+# Determine claude-monitor command for bottom-left pane
+if command -v claude-monitor &> /dev/null; then
+    CLAUDE_MONITOR_CMD="claude-monitor"
+else
+    CLAUDE_MONITOR_CMD=""
+fi
 
 # Create session with first window (this becomes the left/main pane)
 tmux new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" -x "$(tput cols)" -y "$(tput lines)"
@@ -82,15 +92,20 @@ tmux new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR" -x "$(tput cols)" -y "$
 # Split right sidebar (35% width)
 tmux split-window -h -p 35 -c "$PROJECT_DIR"
 
-# Now in the right pane, split it top/bottom (50/50)
+# Split right pane top/bottom (50/50)
 tmux split-window -v -p 50 -c "$PROJECT_DIR"
 
-# Pane layout after splits:
-#   pane 0 = left (Claude Code)
-#   pane 1 = top-right (dev server)
-#   pane 2 = bottom-right (monitoring)
+# Split left pane (pane 0) to add Claude Monitor at bottom (20% height)
+tmux select-pane -t "$SESSION_NAME:1.0"
+tmux split-window -v -p 20 -c "$PROJECT_DIR"
 
-# Pane 0 (left): Claude Code
+# Pane layout after splits:
+#   pane 0 = top-left (Claude Code)
+#   pane 1 = bottom-left (Claude Monitor)
+#   pane 2 = top-right (dev server)
+#   pane 3 = bottom-right (system monitor)
+
+# Pane 0 (top-left): Claude Code
 tmux send-keys -t "$SESSION_NAME:1.0" "cd '$PROJECT_DIR' && clear" C-m
 tmux send-keys -t "$SESSION_NAME:1.0" "echo ''" C-m
 tmux send-keys -t "$SESSION_NAME:1.0" "echo '  Ready for Claude Code - type: claude'" C-m
@@ -104,13 +119,20 @@ tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a d   Detach session'" C-m
 tmux send-keys -t "$SESSION_NAME:1.0" "echo '    Ctrl+a z   Zoom pane'" C-m
 tmux send-keys -t "$SESSION_NAME:1.0" "echo ''" C-m
 
-# Pane 1 (top-right): dev server
-tmux send-keys -t "$SESSION_NAME:1.1" "cd '$PROJECT_DIR' && clear && echo 'Dev server pane - run your server here (e.g., npm run dev)'" C-m
+# Pane 1 (bottom-left): Claude Monitor
+if [ -n "$CLAUDE_MONITOR_CMD" ]; then
+    tmux send-keys -t "$SESSION_NAME:1.1" "$CLAUDE_MONITOR_CMD --compact" C-m
+else
+    tmux send-keys -t "$SESSION_NAME:1.1" "cd '$PROJECT_DIR' && clear && echo 'Install claude-monitor for live dashboard here'" C-m
+fi
 
-# Pane 2 (bottom-right): monitoring
-tmux send-keys -t "$SESSION_NAME:1.2" "$MONITOR_CMD" C-m
+# Pane 2 (top-right): dev server
+tmux send-keys -t "$SESSION_NAME:1.2" "cd '$PROJECT_DIR' && clear && echo 'Dev server pane - run your server here (e.g., npm run dev)'" C-m
 
-# Select Claude Code pane (left)
+# Pane 3 (bottom-right): system monitor
+tmux send-keys -t "$SESSION_NAME:1.3" "$MONITOR_CMD" C-m
+
+# Select Claude Code pane (top-left)
 tmux select-pane -t "$SESSION_NAME:1.0"
 
 # Rename window
