@@ -27,14 +27,22 @@ function Print-Success { param([string]$Message) Write-Host "[OK] $Message" -For
 function Print-Error { param([string]$Message) Write-Host "[X] $Message" -ForegroundColor Red }
 function Print-Info { param([string]$Message) Write-Host "[i] $Message" -ForegroundColor Yellow }
 
-# Install uv if not present
+# Install uv if not present (or broken shim)
 function Install-UV {
     Print-Step "Checking uv (Python package runner)..."
 
-    if (Get-Command uv -ErrorAction SilentlyContinue) {
+    $uvWorks = $false
+    try {
         $version = uv --version 2>&1
-        Print-Success "uv already installed ($version)"
-    } else {
+        if ($LASTEXITCODE -eq 0) {
+            $uvWorks = $true
+            Print-Success "uv already installed ($version)"
+        }
+    } catch {
+        # uv command not found or broken shim
+    }
+
+    if (-not $uvWorks) {
         # Try scoop first
         if (Get-Command scoop -ErrorAction SilentlyContinue) {
             Print-Info "Installing uv via scoop..."
